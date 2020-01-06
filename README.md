@@ -1,3 +1,8 @@
+# What is this:
+this was a team project done for object programming C# course. It contains 2 different apps one for doctor and one for user. Users login with their face and we use microsoft azure services to determine user emotions. Doctors can check user emotion history, move users back and forth from groups.
+original project link:
+https://github.com/tmaciulis22/Moodis
+
 # Code style: 📃
 https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions
 
