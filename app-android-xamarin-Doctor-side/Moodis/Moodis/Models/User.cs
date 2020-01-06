@@ -9,10 +9,11 @@ namespace Moodis.Feature.Login
     {
         [PrimaryKey]
         public string Id { get; set; }
+        public string GroupId { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string PersonGroupId { get; set; }
-        public string GroupName { get; set; }
+        //public string GroupName { get; set; }
         public string PersonId { get; set; }
         public bool IsDoctor { get; set; }
 
@@ -22,9 +23,7 @@ namespace Moodis.Feature.Login
 
         public User()
         {
-            Id = Guid.NewGuid().ToString();
             IsDoctor = true;
-            GroupName = "";
         }
         public User(string username, string password) : this()
         {

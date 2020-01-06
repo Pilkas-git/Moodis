@@ -67,20 +67,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\Enums\Response.cs" />
-    <Compile Include="Database\DatabaseModel.cs" />
     <Compile Include="Encryption\Crypto.cs" />
     <Compile Include="Extensions\AppCompatActivityExtensions.cs" />
     <Compile Include="Extensions\AnimationExtension.cs" />
     <Compile Include="Extensions\ContextExtensions.cs" />
     <Compile Include="Extensions\IListExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Feature\Group\MembersGroupAdapter.cs" />
-    <Compile Include="Feature\Group\MembersViewHolder.cs" />
     <Compile Include="Feature\Group\GroupListAdapter.cs" />
     <Compile Include="Feature\Group\GroupActivityModel.cs" />
     <Compile Include="Feature\Group\GroupActivity.cs" />
     <Compile Include="Feature\Group\GroupListActivity.cs" />
-    <Compile Include="Feature\Group\GroupMembersActivity.cs" />
     <Compile Include="Feature\Group\GroupViewHolder.cs" />
     <Compile Include="Feature\History\ChartViewHolder.cs" />
     <Compile Include="Feature\Menu\UserListAdapter.cs" />
@@ -99,7 +95,13 @@
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ImageInfo.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Network\API.cs" />
+    <Compile Include="Network\Endpoints\IGroupEndpoint.cs" />
+    <Compile Include="Network\Endpoints\IImageInfoEndpoint.cs" />
+    <Compile Include="Network\Endpoints\IUserEndpoint.cs" />
     <Compile Include="Network\Face\Face.cs" />
+    <Compile Include="Network\Requests\LoginRequest.cs" />
+    <Compile Include="Network\Requests\RegisterRequest.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Widget\DatePickerFragment.cs" />
@@ -160,6 +162,9 @@
       <Version>1.4.0.638</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Refit">
+      <Version>5.0.23</Version>
     </PackageReference>
     <PackageReference Include="sqlite-net-pcl">
       <Version>1.6.292</Version>

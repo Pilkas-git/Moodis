@@ -14,23 +14,23 @@ namespace Moodis.History
     {
         public TextView TimeLabel { get; set; }
         public TextView EmotionLabel { get; set; }
-        public TextView UsernameLabel { get; set; }
+
+        private const string TIME_FORMAT = "HH:mm";
 
         public StatViewHolder(View view) : base(view)
         {
             TimeLabel = view.FindViewById<TextView>(Resource.Id.timeLabel);
             EmotionLabel = view.FindViewById<TextView>(Resource.Id.emotionLabel);
-            UsernameLabel = view.FindViewById<TextView>(Resource.Id.usernameLabelHistory);
         }
 
         public void OnBind(ImageInfo stat)
         {
             var context = EmotionLabel.Context;
-            var emotionName = stat.emotions.Max().Name;
-            TimeLabel.Text = stat.ImageDate.Hour.ToString() + ":" + stat.ImageDate.Minute.ToString();
+            var emotionName = stat.HighestEmotion;
+
+            TimeLabel.Text = stat.Date.ToLocalTime().ToString(TIME_FORMAT);
             EmotionLabel.Text = emotionName;
             EmotionLabel.SetTextColor(new Color(ContextCompat.GetColor(context, emotionName.EmotionColor())));
-            UsernameLabel.Text = SignInViewModel.userList.Find(user => user.Id == stat.UserId).Username;
         }
     }
 }

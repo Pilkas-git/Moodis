@@ -35,16 +35,10 @@ namespace Moodis.Feature.Group
         {
             var viewHolder = holder as GroupViewHolder;
             viewHolder.GroupNameLabel.Text = groups[position].Groupname;
-            viewHolder.GroupNameLabel.Click += (sender, e) =>
-            {
-                var MyIntent = new Intent(context, typeof(GroupMembersActivity));
-                MyIntent.PutExtra("clicked", position);
-                context.StartActivity(MyIntent);   
-            };
 
-            viewHolder.GroupLeaveButton.Click += (sender, e) =>
+            viewHolder.GroupLeaveButton.Click += async (sender, e) =>
             {
-                GroupActivityModel.LeaveGroup(groups[position].Groupname);
+                await GroupActivityModel.DeleteGroupAsync(groups[position].Groupname);
                 groups.RemoveAt(position);
                 NotifyItemRemoved(position);
                 if(groups.Count == 0)

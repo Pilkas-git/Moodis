@@ -1,50 +1,52 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Android.Util;
 using Moodis.Constants.Enums;
-using Moodis.Database;
+using Moodis.Feature.Login;
 using Moodis.Feature.Register;
 using Moodis.Feature.SignIn;
+using Moodis.Network;
+using Refit;
 
 namespace Moodis.Feature.Group
 {
     class GroupActivityModel
     {
-        public static List<Group> groups = DatabaseModel.FetchGroupFromDatabase();
+        public static List<Group> groups;
 
-        public Response AddUserToGroup(string groupName)
+        public GroupActivityModel()
         {
-            if(groups != null)
+            oncreate();
+        }
+
+        private async void oncreate()
+        {
+            try
             {
-                var username = SignInViewModel.currentUser.Username;
-                var group = groups.Find(groupTemp => groupTemp.Groupname == groupName);
-                if(group == null)
-                {
-                    return Response.GroupNotFound;
-                }
-                if(!group.IsMember(username))
-                {
-                    group.AddMember(username);
-                    DatabaseModel.UpdateGroupToDatabase(group);
-                    return Response.OK;
-                }
-                else
-                {
-                    return Response.GroupExists;
-                }
+                groups = await API.GroupEndpoint.GetAllGroups();
             }
-            else
+            catch(ApiException ex)
             {
-                return Response.GeneralError;
+                groups = new List<Group>();
+                Log.Error("group",  "No groups found" + ex.StackTrace);
             }
         }
 
-        public Response CreateGroup(string groupName)
+        public async Task<Response> CreateGroupAsync(string groupName)
         {
-            if(!groups.Exists(group => group.Groupname == groupName))
+            if (groups.Count == 0 || !groups.Exists(group => group.Groupname == groupName))
             {
-                var newGroup = new Group(groupName, SignInViewModel.currentUser.Username);
+                var newGroup = new Group(groupName, SignInViewModel.currentUser.Id);
                 groups.Add(newGroup);
-                DatabaseModel.AddGroupToDatabase(newGroup);
+                try
+                {
+                    await API.GroupEndpoint.CreateGroup(newGroup);
+                }catch(ApiException ex)
+                {
+                    Log.Error("group", "Error creating group" + ex.StackTrace);
+                }
                 return Response.OK;
             }
             else
@@ -53,21 +55,21 @@ namespace Moodis.Feature.Group
             }
         }
 
-        public static List<string> GetGroupUserIds(string groupName)
+        public static async Task<List<string>> GetGroupUserIdsAsync(string groupId)
         {
-            var whereUserIs = groups.Where(group => group.Groupname == groupName).ToList();
-            List<string> FriendUsernames = new List<string>();
-            whereUserIs.ForEach(group => group.Members.ForEach(username => FriendUsernames.Add(username)));
             List<string> UserIds = new List<string>();
-            FriendUsernames.ForEach(username => UserIds.Add(RegisterViewModel.GetIdByUsername(username)));
+            var users = await API.UserEndpoint.GetAllUsersByGroup(groupId);
+            users.ForEach(user => UserIds.Add(user.Id));
             return UserIds;
         }
 
-        public static void LeaveGroup(string groupname)
+        public static async Task DeleteGroupAsync(string groupId)
         {
-            var group = groups.Find(group => group.Groupname == groupname);
-            group.Members.Remove(SignInViewModel.currentUser.Username);
-            DatabaseModel.UpdateGroupToDatabase(group);
+            var group = await API.GroupEndpoint.GetByIdGroup(groupId);
+            var users = await API.UserEndpoint.GetAllUsersByGroup(groupId);
+            users.ForEach(user => user.GroupId = null);
+            users.ForEach(async user => await API.UserEndpoint.UpdateUser(user));
+            await API.GroupEndpoint.DeleteGroup(groupId);
         }
     }
 }

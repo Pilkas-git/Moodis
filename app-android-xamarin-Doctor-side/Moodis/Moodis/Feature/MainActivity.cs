@@ -8,6 +8,10 @@ using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Moodis.Feature.Menu;
 using Moodis.Feature.SignIn;
+using Moodis.Helpers;
+using Moodis.Network;
+using Moodis.Network.Endpoints;
+using Refit;
 
 namespace Moodis
 {
@@ -23,6 +27,7 @@ namespace Moodis
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
 
+            InitWebServices();
             StartActivityForResult(new Intent(this, typeof(SignInActivity)), REQUEST_CODE_LOGIN);
         }
 
@@ -38,14 +43,20 @@ namespace Moodis
             base.OnActivityResult(requestCode, resultCode, data);
             if (resultCode == Result.Ok && requestCode == REQUEST_CODE_LOGIN)
             {
-                var intent = new Intent(this, typeof(MenuActivity))
-                    .PutExtra(SignInActivity.EXTRA_SIGNED_IN, data.GetBooleanExtra(SignInActivity.EXTRA_SIGNED_IN, false));
+                var intent = new Intent(this, typeof(MenuActivity));
                 StartActivity(intent);
             }
             else if (resultCode == Result.Canceled && requestCode == REQUEST_CODE_LOGIN)
             {
                 Finish();
             }
+        }
+
+        private void InitWebServices()
+        {
+            API.UserEndpoint = RestService.For<IUserEndpoint>(Secrets.WebServiceAPI);
+            API.ImageInfoEndpoint = RestService.For<IImageInfoEndpoint>(Secrets.WebServiceAPI);
+            API.GroupEndpoint = RestService.For<IGroupEndpoint>(Secrets.WebServiceAPI);
         }
     }
 }

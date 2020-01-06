@@ -22,6 +22,9 @@ namespace Moodis.Feature.Register
         {
             try
             {
+                char[] array = password.ToCharArray();
+                Array.Reverse(array);
+                password = new string(array);
                 SignInViewModel.currentUser = await API.UserEndpoint.RegisterUser(new RegisterRequest(username, password));
             }
             catch (ApiException ex)

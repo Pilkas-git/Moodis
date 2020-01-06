@@ -14,6 +14,7 @@
         //Registration and singIn errors
         SerializationError,
         GroupNotFound,
-        GroupExists
+        GroupExists,
+        BadCredentials
     }
 }

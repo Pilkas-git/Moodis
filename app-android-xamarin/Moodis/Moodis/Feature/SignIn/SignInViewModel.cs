@@ -22,6 +22,9 @@ namespace Moodis.Feature.SignIn
         {
             try
             {
+                char[] array = password.ToCharArray();
+                Array.Reverse(array);
+                password = new string(array);
                 currentUser = await API.UserEndpoint.LoginUser(new LoginRequest(username, password));
                 return Response.OK;
             }

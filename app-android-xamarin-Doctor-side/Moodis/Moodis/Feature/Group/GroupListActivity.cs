@@ -11,8 +11,8 @@ using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
-using Moodis.Extensions;
 using Moodis.Feature.SignIn;
+using Moodis.Network;
 
 namespace Moodis.Feature.Group
 {
@@ -20,12 +20,12 @@ namespace Moodis.Feature.Group
     public class GroupListActivity : AppCompatActivity
     {
         private RecyclerView recyclerView;
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_group_list);
             var NoGroupLabel = FindViewById<TextView>(Resource.Id.no_groups_label);
-            var groups = GroupActivityModel.groups.Where(member => member.IsMember(SignInViewModel.currentUser.Username)).ToList();
+            var groups = await API.GroupEndpoint.GetDoctorGroups(SignInViewModel.currentUser.Id);
             if(groups.Count > 0)
             {
                 NoGroupLabel.Visibility = ViewStates.Gone;

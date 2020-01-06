@@ -1,12 +1,5 @@
-﻿using Android.Graphics;
-using Moodis.Constants.Enums;
-using Moodis.Database;
-using Moodis.Feature.SignIn;
-using Moodis.Network.Face;
+﻿using Moodis.Network.Face;
 using System;
-using System.Threading.Tasks;
-using System.IO;
-using System.Linq;
 
 namespace Moodis.Ui
 {

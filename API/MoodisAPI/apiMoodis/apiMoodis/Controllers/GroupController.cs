@@ -10,6 +10,7 @@ namespace apiMoodis.Controllers
     public class GroupController : ApiController
     {
         [HttpGet]
+        [Route("api/group")]
         public IHttpActionResult GetAllGroups()
         {
             using (DatabaseContext dbContext = new DatabaseContext())
@@ -32,6 +33,7 @@ namespace apiMoodis.Controllers
         }
 
         [HttpGet]
+        [Route("api/group/byid/")]
         public IHttpActionResult GetByIdGroup(string id)
         {
             using (DatabaseContext dbContext = new DatabaseContext())
@@ -54,13 +56,14 @@ namespace apiMoodis.Controllers
         }
 
         [HttpGet]
+        [Route("api/group/byDoctor/")]
         public IHttpActionResult GetDoctorGroups(string doctorId)
         {
             using (DatabaseContext dbContext = new DatabaseContext())
             {
                 try
                 {
-                    var groups = dbContext.Groups.TakeWhile(entity => entity.DoctorId == doctorId).Select(entity => new GroupFE()
+                    var groups = dbContext.Groups.Where(entity => entity.DoctorId == doctorId).Select(entity => new GroupFE()
                     {
                         Id = entity.Id,
                         DoctorId = entity.DoctorId,

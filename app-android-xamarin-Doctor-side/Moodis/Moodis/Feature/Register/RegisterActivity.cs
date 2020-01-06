@@ -126,7 +126,7 @@ namespace Moodis.Feature.Register
             progressBar.BringToFront();
             registerButton.Enabled = false;
 
-            var regex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,15}$");
+            var regex = new Regex(@"^(?=.*\d)(?=.*[A-Z])(.+)$");
             if (regex.IsMatch(password))
             {
                 var response = await registerViewModel.AddUser(username, password);

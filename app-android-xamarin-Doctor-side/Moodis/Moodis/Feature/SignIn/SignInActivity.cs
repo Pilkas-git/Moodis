@@ -3,14 +3,13 @@ using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
-using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Moodis.Constants.Enums;
 using Moodis.Extensions;
 using Moodis.Feature.Register;
-using System.Reflection;
+using Moodis.Network;
 using System.Threading.Tasks;
 
 namespace Moodis.Feature.SignIn
@@ -34,7 +33,7 @@ namespace Moodis.Feature.SignIn
             //TODO when Android.Arch.Lifecycle lib gets updated use this provider, so various lifecycle and configuration changes won't affect data stored in viewmodel
             //SignInViewModel = ViewModelProviders.Of(this).Get(Java.Lang.Class.FromType(typeof(SignInViewModel))) as SignInViewModel;
 
-            //AnimationExtension.AnimateBackground(FindViewById(Resource.Id.constraintLayoutSingIn));
+            AnimationExtension.AnimateBackground(FindViewById(Resource.Id.constraintLayoutSingIn));
         }
 
         public override void OnBackPressed()
@@ -51,11 +50,15 @@ namespace Moodis.Feature.SignIn
             if (resultCode == Result.FirstUser && requestCode == REQUEST_CODE_REGISTER)
             {
                 Toast.MakeText(this, Resource.String.user_created, ToastLength.Short);
+                SetResult(Result.Ok);
+                Finish();
             }
             else if (resultCode == Result.Canceled && requestCode == REQUEST_CODE_REGISTER)
             {
                 if(SignInViewModel.currentUser != null)
                     await DeleteUser();
+                SetResult(Result.Ok);
+                Finish();
             }
         }
 
@@ -144,29 +147,32 @@ namespace Moodis.Feature.SignIn
             };
         }
 
-        private void SignIn(string username, string password)
+        private async void SignIn(string username, string password)
         {
             progressBar.Visibility = ViewStates.Visible;
             progressBar.BringToFront();
 
-            if (SignInViewModel.Authenticate(username, password))
+            var response = await SignInViewModel.Authenticate(username, password);
+
+            if (response == Response.OK)
             {
-                SetResult(Result.Ok, new Intent().PutExtra(EXTRA_SIGNED_IN, true));
+                SetResult(Result.Ok);
                 Finish();
             }
-            else
+            else if (response == Response.BadCredentials)
             {
                 progressBar.Visibility = ViewStates.Gone;
-                Toast.MakeText(this, Resource.String.user_not_found_error, ToastLength.Short).Show();
+                Toast.MakeText(this, Resource.String.login_fail, ToastLength.Short).Show();
+            }
+            else if (response == Response.ApiError)
+            {
+                progressBar.Visibility = ViewStates.Gone;
+                Toast.MakeText(this, Resource.String.api_error, ToastLength.Short).Show();
             }
         }
         private async Task DeleteUser()
         {
-            var response = await SignInViewModel.DeleteUser();
-            if (response != Response.OK)
-            {
-                Log.Error(Class.Name, MethodBase.GetCurrentMethod().Name + ": " + response.ToString());
-            }
+           await API.UserEndpoint.DeleteUser(SignInViewModel.currentUser.Id);
         }
     }
 }
